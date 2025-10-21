@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
-public class Bullet {
+public class Bullet implements Actualizable{
 
 	private int xSpeed;
 	private int ySpeed;
@@ -19,6 +19,7 @@ public class Bullet {
 	        this.xSpeed = xSpeed;
 	        this.ySpeed = ySpeed;
 	    }
+            @Override
 	    public void update() {
 	        spr.setPosition(spr.getX()+xSpeed, spr.getY()+ySpeed);
 	        if (spr.getX() < 0 || spr.getX()+spr.getWidth() > Gdx.graphics.getWidth()) {

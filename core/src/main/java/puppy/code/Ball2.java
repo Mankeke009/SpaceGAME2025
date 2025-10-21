@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 
-public class Ball2 {
-	private int x;
+public class Ball2 implements Actualizable{
+    private int x;
     private int y;
     private int xSpeed;
     private int ySpeed;
@@ -31,6 +31,9 @@ public class Ball2 {
         this.setXSpeed(xSpeed);
         this.setySpeed(ySpeed);
     }
+    // GM1.5: Se agrega @Override porque este método 
+    // está definido en la interfaz Actualizable.
+    @Override
     public void update() {
         x += getXSpeed();
         y += getySpeed();
