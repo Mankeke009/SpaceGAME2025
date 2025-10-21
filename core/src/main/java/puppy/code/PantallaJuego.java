@@ -8,15 +8,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+//import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
-public class PantallaJuego implements Screen {
-
-	private SpaceNavigation game;
-	private OrthographicCamera camera;	
+public class PantallaJuego extends PantallaBase { //extends PantallaBase es el GM 1.4
+   
+	
 	private SpriteBatch batch;
 	private Sound explosionSound;
 	private Music gameMusic;
@@ -34,7 +33,7 @@ public class PantallaJuego implements Screen {
 
 	public PantallaJuego(SpaceNavigation game, int ronda, int vidas, int score,  
 			int velXAsteroides, int velYAsteroides, int cantAsteroides) {
-		this.game = game;
+		super(game);
 		this.ronda = ronda;
 		this.score = score;
 		this.velXAsteroides = velXAsteroides;
@@ -42,9 +41,7 @@ public class PantallaJuego implements Screen {
 		this.cantAsteroides = cantAsteroides;
 		
 		batch = game.getBatch();
-		camera = new OrthographicCamera();	
 		camera.setToOrtho(false, 800, 640);
-		//inicializar assets; musica de fondo y efectos de sonido
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
 		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("piano-loops.wav")); //
@@ -158,9 +155,9 @@ public class PantallaJuego implements Screen {
 	    	 
 	}
     
-    public boolean agregarBala(Bullet bb) {
-    	return balas.add(bb);
-    }
+        public boolean agregarBala(Bullet bb) {
+            return balas.add(bb);
+        }
 	
 	@Override
 	public void show() {
@@ -173,25 +170,6 @@ public class PantallaJuego implements Screen {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
