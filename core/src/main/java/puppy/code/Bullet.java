@@ -2,49 +2,46 @@ package puppy.code;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 
 
-public class Bullet implements Actualizable{
+public class Bullet extends ObjetoEspacial implements Colisionable {
+    private boolean destroyed = false;
 
-	private int xSpeed;
-	private int ySpeed;
-	private boolean destroyed = false;
-	private Sprite spr;
-	    
-	    public Bullet(float x, float y, int xSpeed, int ySpeed, Texture tx) {
-	    	spr = new Sprite(tx);
-	    	spr.setPosition(x, y);
-	        this.xSpeed = xSpeed;
-	        this.ySpeed = ySpeed;
-	    }
-            @Override
-	    public void update() {
-	        spr.setPosition(spr.getX()+xSpeed, spr.getY()+ySpeed);
-	        if (spr.getX() < 0 || spr.getX()+spr.getWidth() > Gdx.graphics.getWidth()) {
-	            destroyed = true;
-	        }
-	        if (spr.getY() < 0 || spr.getY()+spr.getHeight() > Gdx.graphics.getHeight()) {
-	        	destroyed = true;
-	        }
-	        
-	    }
-	    
-	    public void draw(SpriteBatch batch) {
-	    	spr.draw(batch);
-	    }
-	    
-	    public boolean checkCollision(Ball2 b2) {
-	        if(spr.getBoundingRectangle().overlaps(b2.getArea())){
-	        	// Se destruyen ambos
-	            this.destroyed = true;
-	            return true;
-	
-	        }
-	        return false;
-	    }
-	    
-	    public boolean isDestroyed() {return destroyed;}
-	
+    public Bullet(float x, float y, int xSpeed, int ySpeed, Texture tx) {
+        super(x, y, xSpeed, ySpeed, tx);
+    }
+
+    @Override
+    public void update() {
+        x += xSpeed;
+        y += ySpeed;
+        spr.setPosition(x, y);
+        
+        // Se marca como destruida si sale de la pantalla
+        if (x < 0 || x > Gdx.graphics.getWidth() || y < 0 || y > Gdx.graphics.getHeight()) {
+            destroyed = true;
+        }
+    }
+    
+    @Override
+    public Rectangle getArea() {
+        return spr.getBoundingRectangle();
+    }
+
+    @Override
+    public boolean verificarColision(Colisionable otro) {
+        return this.getArea().overlaps(otro.getArea());
+    }
+
+    public boolean isDestroyed() { return destroyed; }
+    
+    // Método específico para interactuar con asteroides en PantallaJuego
+    public boolean checkCollision(Ball2 b2) {
+        if(verificarColision(b2)){
+            this.destroyed = true;
+            return true;
+        }
+        return false;
+    }
 }
