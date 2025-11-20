@@ -73,7 +73,7 @@ public class PantallaJuego extends PantallaBase { //extends PantallaBase es el G
 		game.getFont().getData().setScale(2f);		
 		game.getFont().draw(batch, str, 10, 30);
 		game.getFont().draw(batch, "Score:"+this.score, Gdx.graphics.getWidth()-150, 30);
-		game.getFont().draw(batch, "HighScore:"+game.getHighScore(), Gdx.graphics.getWidth()/2-100, 30);
+		game.getFont().draw(batch, "HighScore:" + HighScore.getInstance().getHighScore(), Gdx.graphics.getWidth()/2-100, 30);
 	}
 	@Override
 	public void render(float delta) {
@@ -136,8 +136,7 @@ public class PantallaJuego extends PantallaBase { //extends PantallaBase es el G
   	        }
 	      
 	      if (nave.estaDestruido()) {
-  			if (score > game.getHighScore())
-  				game.setHighScore(score);
+  		HighScore.getInstance().updateHighScore(score);	
 	    	Screen ss = new PantallaGameOver(game);
   			ss.resize(1200, 800);
   			game.setScreen(ss);
