@@ -15,7 +15,7 @@ public class PantallaMenu extends PantallaBase {//extends PantallaBase es el GM 
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0, 0, 0.2f, 1);
+		ScreenUtils.clear(0, 0, 0, 1);
 
 		camera.update();
 		game.getBatch().setProjectionMatrix(camera.combined);
