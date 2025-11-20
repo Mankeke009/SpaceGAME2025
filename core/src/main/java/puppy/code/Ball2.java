@@ -2,8 +2,6 @@ package puppy.code;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 
@@ -23,19 +21,17 @@ public class Ball2 extends ObjetoEspacial implements Colisionable {
     }
 
     @Override
-    public void update() {
+   protected void mover() {
         x += xSpeed;
         y += ySpeed;
-
-        // Rebote en bordes
+    }
+   @Override
+    protected void comportamientoBordes() {
         if (x + xSpeed < 0 || x + xSpeed + spr.getWidth() > Gdx.graphics.getWidth())
         	xSpeed *= -1;
         if (y + ySpeed < 0 || y + ySpeed + spr.getHeight() > Gdx.graphics.getHeight())
         	ySpeed *= -1;
-        
-        spr.setPosition(x, y);
     }
-
     @Override
     public Rectangle getArea() {
         return spr.getBoundingRectangle();
@@ -46,7 +42,6 @@ public class Ball2 extends ObjetoEspacial implements Colisionable {
         return this.getArea().overlaps(otro.getArea());
     }
 
-    // Getters/Setters necesarios para la lógica de rebote entre asteroides
     public void setXSpeed(int xSpeed) { this.xSpeed = xSpeed; }
     public void setySpeed(int ySpeed) { this.ySpeed = ySpeed; }
     public int getXSpeed() { return (int)xSpeed; }

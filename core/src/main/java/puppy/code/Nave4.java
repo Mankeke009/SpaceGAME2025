@@ -4,12 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-
-
 
 public class Nave4 extends ObjetoEspacial implements Colisionable {
     
@@ -25,7 +23,7 @@ public class Nave4 extends ObjetoEspacial implements Colisionable {
     private float rotacion = 0;
 
     public Nave4(int x, int y, Texture tx, Sound soundChoque, Texture txBala, Sound soundBala) {
-        super(x, y, 0, 0, tx); // xSpeed e ySpeed iniciales en 0
+        super(x, y, 0, 0, tx);
         this.sonidoHerido = soundChoque;
         this.soundBala = soundBala;
         this.txBala = txBala;
@@ -34,45 +32,54 @@ public class Nave4 extends ObjetoEspacial implements Colisionable {
         spr.setBounds(x, y, 45, 45);
     }
 
+    // --- TEMPLATE METHOD: Pasos implementados ---
+
     @Override
-    public void update() {
-        // La nave actualiza su lógica principalmente en draw() por el input,
-        // pero podríamos moverlo aquí en el futuro.
+    protected void mover() {
+        // Aplicamos la velocidad actual
+        x += xSpeed;
+        y += ySpeed;
     }
-    
-    // Método draw personalizado que maneja el input
+
+    @Override
+    protected void comportamientoBordes() {
+        // Mantenerse dentro de la pantalla (Clamp)
+        if (x + xSpeed < 0 || x + xSpeed + spr.getWidth() > Gdx.graphics.getWidth()) xSpeed = 0;
+        if (y + ySpeed < 0 || y + ySpeed + spr.getHeight() > Gdx.graphics.getHeight()) ySpeed = 0;
+    }
+
+    // --------------------------------------------
+
     public void draw(SpriteBatch batch, PantallaJuego juego) {
-        // --- Apuntar con Mouse ---
+        // --- 1. Lógica de Input (Mouse) ---
         Vector3 mousePos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         juego.camera.unproject(mousePos); 
-        float shipX = x + spr.getOriginX(); // Usamos 'x' heredada
-        float shipY = y + spr.getOriginY(); // Usamos 'y' heredada
+        float shipX = x + spr.getOriginX();
+        float shipY = y + spr.getOriginY();
         float deltaX = mousePos.x - shipX;
         float deltaY = mousePos.y - shipY;
         float angle = MathUtils.atan2(deltaY, deltaX) * MathUtils.radiansToDegrees;
         float targetRotation = angle - 90; 
-        this.rotacion = MathUtils.lerpAngleDeg(this.rotacion, targetRotation, 0.15f);
+        this.rotacion = MathUtils.lerpAngleDeg(this.rotacion, targetRotation, 1.0f);
         spr.setRotation(this.rotacion);
 
         if (!herido) {
-            // --- Movimiento Stop-on-Release ---
-            xSpeed = 0; // Usamos variable heredada
-            ySpeed = 0; // Usamos variable heredada
+            // --- 2. Lógica de Input (Teclado) ---
+            xSpeed = 0; 
+            ySpeed = 0; 
 
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) xSpeed = -shipSpeed;
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) xSpeed = shipSpeed;
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) ySpeed = -shipSpeed;
             if (Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.W)) ySpeed = shipSpeed;
 
-            // Bordes
-            if (x + xSpeed < 0 || x + xSpeed + spr.getWidth() > Gdx.graphics.getWidth()) xSpeed = 0;
-            if (y + ySpeed < 0 || y + ySpeed + spr.getHeight() > Gdx.graphics.getHeight()) ySpeed = 0;
+            // --- 3. Ejecutar Template Method ---
+            // Esto llama a mover() -> comportamientoBordes() -> setPosition()
+            this.update(); 
             
-            x += xSpeed;
-            y += ySpeed;
-            spr.setPosition(x, y);
             spr.draw(batch);
         } else {
+            // Lógica de herido (vibración visual)
             spr.setX(x + MathUtils.random(-2, 2));
             spr.draw(batch);
             spr.setX(x);
@@ -80,14 +87,13 @@ public class Nave4 extends ObjetoEspacial implements Colisionable {
             if (tiempoHerido <= 0) herido = false;
         }
         
-        // --- Disparo ---
+        // --- 4. Disparo ---
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             float bulletSpeed = 5.0f;
             float angleRad = (this.rotacion + 90) * MathUtils.degreesToRadians; 
             int bXSpeed = (int) (MathUtils.cos(angleRad) * bulletSpeed);
             int bYSpeed = (int) (MathUtils.sin(angleRad) * bulletSpeed);
             
-            // Spawn en centro
             float spawnX = x + spr.getOriginX() - txBala.getWidth()/2f;
             float spawnY = y + spr.getOriginY() - txBala.getHeight()/2f;
             
@@ -98,18 +104,17 @@ public class Nave4 extends ObjetoEspacial implements Colisionable {
     }
 
     @Override
-    public Rectangle getArea() {
-        return spr.getBoundingRectangle();
-    }
+    public Rectangle getArea() { return spr.getBoundingRectangle(); }
 
     @Override
     public boolean verificarColision(Colisionable otro) {
         return !herido && this.getArea().overlaps(otro.getArea());
     }
     
+    // ... (checkCollision y getters/setters se mantienen igual) ...
     public boolean checkCollision(Ball2 b) {
         if(verificarColision(b)){
-            // Rebote simple al chocar
+            // Rebote simple al chocar (mantenemos la lógica de siempre)
             if (xSpeed == 0) xSpeed += b.getXSpeed()/2;
             if (b.getXSpeed() == 0) b.setXSpeed(b.getXSpeed() + (int)xSpeed/2);
             xSpeed = -xSpeed;

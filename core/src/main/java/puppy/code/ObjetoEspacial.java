@@ -33,6 +33,15 @@ public abstract class ObjetoEspacial {
         spr.draw(batch);
     }
     
-    // Obligamos a los hijos a definir su movimiento
-    public abstract void update();
+   // --- PATRÓN TEMPLATE METHOD (GM2.2) ---
+
+    public final void update() {
+        mover();                // Paso 1: Calcular nueva posición
+        comportamientoBordes(); // Paso 2: Que hacer si toca un borde
+        spr.setPosition(x, y);  // Paso 3: Actualizar sprite 
+    }
+
+    // 2. Los "Pasos" que cada hijo debe implementar a su manera
+    protected abstract void mover();
+    protected abstract void comportamientoBordes();
 }
