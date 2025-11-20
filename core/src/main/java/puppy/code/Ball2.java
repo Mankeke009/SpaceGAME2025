@@ -7,10 +7,13 @@ import com.badlogic.gdx.math.Rectangle;
 
 // Hereda de ObjetoEspacial e implementa Colisionable
 public class Ball2 extends ObjetoEspacial implements Colisionable {
+    // 1. Atributo para la estrategia
+    private MovimientoStrategy movimientoStrategy;
     
     public Ball2(int x, int y, int size, int xSpeed, int ySpeed, Texture tx) {
         super(x, y, xSpeed, ySpeed, tx);
-        
+        // Inicializamos la estrategia por defecto
+        this.movimientoStrategy = new MovimientoRebote();
         // Corrección de bordes iniciales
     	if (x - size < 0) this.x = x + size;
     	if (x + size > Gdx.graphics.getWidth()) this.x = x - size;
@@ -22,8 +25,7 @@ public class Ball2 extends ObjetoEspacial implements Colisionable {
 
     @Override
    protected void mover() {
-        x += xSpeed;
-        y += ySpeed;
+        movimientoStrategy.mover(this);
     }
    @Override
     protected void comportamientoBordes() {
