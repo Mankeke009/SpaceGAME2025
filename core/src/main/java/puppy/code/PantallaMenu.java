@@ -22,6 +22,7 @@ public class PantallaMenu extends PantallaBase {//extends PantallaBase es el GM 
             game.getBatch().begin();
             game.getFont().draw(game.getBatch(), "Bienvenido a Space Navigation !", 140, 400);
             game.getFont().draw(game.getBatch(), "Pincha en cualquier lado o presiona cualquier tecla para comenzar ...", 100, 300);
+            game.getFont().draw(game.getBatch(), "HighScore Actual: " + HighScore.getInstance().getHighScore(), 140, 200);
 
             game.getBatch().end();
             if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {

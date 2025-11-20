@@ -1,18 +1,19 @@
 package puppy.code;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 
 public class HighScore {
-    // 1. La única instancia estática (Singleton)
-    private static HighScore instance;
     
-    // Variable para guardar el récord
+    private static HighScore instance;
     private int highScore;
 
-    // 2. Constructor privado: Nadie desde fuera puede hacer "new HighScoreManager()"
     private HighScore() {
-        this.highScore = 0;
+        prefs = Gdx.app.getPreferences("SpaceNavData");
+        this.highScore = prefs.getInteger("highscore", 0);
     }
-
-    // 3. Método público estático para obtener la única instancia
+   
+    private Preferences prefs;
+   
     public static HighScore getInstance() {
         if (instance == null) {
             instance = new HighScore();
@@ -26,10 +27,15 @@ public class HighScore {
         return highScore;
     }
 
-    // Método que verifica si el puntaje actual es mayor al récord y lo actualiza
     public void updateHighScore(int currentScore) {
         if (currentScore > this.highScore) {
             this.highScore = currentScore;
+            
+            // 3. Guardamos el nuevo récord en disco
+            prefs.putInteger("highscore", this.highScore);
+            
+            // 4. ¡Importante! flush() obliga a escribir los cambios inmediatamente
+            prefs.flush(); 
         }
     }
 }
