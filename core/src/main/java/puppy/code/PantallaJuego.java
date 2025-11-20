@@ -9,13 +9,11 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 //import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+//import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+    public class PantallaJuego extends PantallaBase {
 
-public class PantallaJuego extends PantallaBase { //extends PantallaBase es el GM 1.4
-   
-	
 	private SpriteBatch batch;
 	private Sound explosionSound;
 	private Music gameMusic;
@@ -24,50 +22,64 @@ public class PantallaJuego extends PantallaBase { //extends PantallaBase es el G
 	private int velXAsteroides; 
 	private int velYAsteroides; 
 	private int cantAsteroides;
-	
 	private Nave4 nave;
-	private  ArrayList<Ball2> balls1 = new ArrayList<>();
-	private  ArrayList<Ball2> balls2 = new ArrayList<>();
-	private  ArrayList<Bullet> balas = new ArrayList<>();
+	
+	private ArrayList<Ball2> balls1 = new ArrayList<>();
+	private ArrayList<Ball2> balls2 = new ArrayList<>();
+	private ArrayList<Bullet> balas = new ArrayList<>();
 
+        // --- GM2.4: Atributo para la fábrica ---
+        private JuegoFactory factory;
 
 	public PantallaJuego(SpaceNavigation game, int ronda, int vidas, int score,  
 			int velXAsteroides, int velYAsteroides, int cantAsteroides) {
+		
 		super(game);
+		
 		this.ronda = ronda;
 		this.score = score;
 		this.velXAsteroides = velXAsteroides;
 		this.velYAsteroides = velYAsteroides;
 		this.cantAsteroides = cantAsteroides;
 		
+        // --- GM2.4: Inicializamos la fábrica ---
+        // (En un juego más grande, esta fábrica podría venir como parámetro del constructor)
+        this.factory = new FabricaNivel1();
+        
 		batch = game.getBatch();
 		camera.setToOrtho(false, 800, 640);
+		
+		//inicializar assets de la pantalla (música fondo y explosión siguen aquí por ser globales de la pantalla)
 		explosionSound = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 		explosionSound.setVolume(1,0.5f);
-		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("piano-loops.wav")); //
+		gameMusic = Gdx.audio.newMusic(Gdx.files.internal("piano-loops.wav")); 
 		
 		gameMusic.setLooping(true);
 		gameMusic.setVolume(0.5f);
 		gameMusic.play();
 		
-	    // cargar imagen de la nave, 64x64   
-	    nave = new Nave4(Gdx.graphics.getWidth()/2-50,30,new Texture(Gdx.files.internal("MainShip3.png")),
-	    				Gdx.audio.newSound(Gdx.files.internal("hurt.ogg")), 
-	    				new Texture(Gdx.files.internal("Rocket2.png")), 
-	    				Gdx.audio.newSound(Gdx.files.internal("pop-sound.mp3"))); 
-        nave.setVidas(vidas);
-        //crear asteroides
+	    // --- GM2.4: Usamos la fábrica para crear la Nave ---
+        // ANTES: nave = new Nave4(..., new Texture(...), ...);
+        // AHORA:
+	    nave = factory.crearNave(Gdx.graphics.getWidth()/2-50, 30);
+	    
+	    nave.setVidas(vidas);
+        
+        // --- GM2.4: Usamos la fábrica para crear Asteroides ---
         Random r = new Random();
-	    for (int i = 0; i < cantAsteroides; i++) {
-	        Ball2 bb = new Ball2(r.nextInt((int)Gdx.graphics.getWidth()),
-	  	            50+r.nextInt((int)Gdx.graphics.getHeight()-50),
-	  	            20+r.nextInt(10), velXAsteroides+r.nextInt(4), velYAsteroides+r.nextInt(4), 
-	  	            new Texture(Gdx.files.internal("aGreyMedium4.png")));	   
-	  	    balls1.add(bb);
+        for (int i = 0; i < cantAsteroides; i++) {
+            // ANTES: Ball2 bb = new Ball2(..., new Texture(...));
+            // AHORA:
+	        Ball2 bb = factory.crearAsteroide(
+                r.nextInt((int)Gdx.graphics.getWidth()),
+	  	        50 + r.nextInt((int)Gdx.graphics.getHeight()-50),
+	  	        velXAsteroides + r.nextInt(4), 
+                velYAsteroides + r.nextInt(4)
+            );
+	        balls1.add(bb);
 	  	    balls2.add(bb);
 	  	}
 	}
-    
 	public void dibujaEncabezado() {
 		CharSequence str = "Vidas: "+nave.getVidas()+" Ronda: "+ronda;
 		game.getFont().getData().setScale(2f);		
