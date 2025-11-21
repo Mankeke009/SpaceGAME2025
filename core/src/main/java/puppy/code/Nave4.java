@@ -59,7 +59,7 @@ public class Nave4 extends ObjetoEspacial implements Colisionable {
         float deltaX = mousePos.x - shipX;
         float deltaY = mousePos.y - shipY;
         float angle = MathUtils.atan2(deltaY, deltaX) * MathUtils.radiansToDegrees;
-        float targetRotation = angle - 90; 
+        float targetRotation = angle + 260 ; 
         this.rotacion = MathUtils.lerpAngleDeg(this.rotacion, targetRotation, 1.0f);
         spr.setRotation(this.rotacion);
 
@@ -134,7 +134,10 @@ public class Nave4 extends ObjetoEspacial implements Colisionable {
         }
         return false;
     }
-    
+    public void ganarVida() {
+        vidas++;
+        // Opcional: Reproducir sonido de "power up" si tuvieras uno
+    }
     public boolean estaDestruido() { return !herido && destruida; }
     public boolean estaHerido() { return herido; }
     public int getVidas() { return vidas; }

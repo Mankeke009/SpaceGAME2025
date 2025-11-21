@@ -11,4 +11,5 @@ package puppy.code;
 public interface JuegoFactory {
     public Nave4 crearNave(int x, int y);
     public Ball2 crearAsteroide(int x, int y, int velX, int velY);
+    public PowerUp crearPowerUp(int x, int y, int velX, int velY);
 }

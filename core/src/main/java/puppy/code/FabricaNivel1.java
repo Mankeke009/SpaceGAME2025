@@ -34,4 +34,10 @@ public class FabricaNivel1 implements JuegoFactory {
         // Para simplificar, usaremos tamaño 30 por defecto.
         return new Ball2(x, y, 30, velX, velY, txAsteroide);
     }
+    public PowerUp crearPowerUp(int x, int y, int velX, int velY) {
+        // Usamos la textura de la bala (Rocket2) para el PowerUp por ahora,
+        // para que se distinga de los asteroides.
+        Texture txPowerUp = new Texture(Gdx.files.internal("heartt.png")); 
+        return new PowerUp(x, y, velX, velY, txPowerUp);
+    }
 }

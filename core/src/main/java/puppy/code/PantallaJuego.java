@@ -28,7 +28,7 @@ public class PantallaJuego extends PantallaBase {
 	private ArrayList<Ball2> balls1 = new ArrayList<>();
 	private ArrayList<Ball2> balls2 = new ArrayList<>();
 	private ArrayList<Bullet> balas = new ArrayList<>();
-
+        private ArrayList<PowerUp> powerups = new ArrayList<>();
         // --- GM2.4: Atributo para la fábrica ---
         private JuegoFactory factory;
         private boolean isPaused = false;
@@ -128,7 +128,38 @@ public class PantallaJuego extends PantallaBase {
 				for (Ball2 ball : balls1) {
 					ball.update();
 				}
+                                // --- Lógica Power-Ups ---
+            
+                                // 1. Generar Power-Up aleatorio (probabilidad baja: 0.2% por frame)
+                                if (new Random().nextInt(1000) < 2) { 
+                                    PowerUp pu = factory.crearPowerUp(
+                                        new Random().nextInt(Gdx.graphics.getWidth()), 
+                                        Gdx.graphics.getHeight(), 
+                                        0, -3 // Cae verticalmente
+                                    );
+                                    powerups.add(pu);
+                                }
 
+                                // 2. Actualizar y verificar colisión
+                                for (int i = 0; i < powerups.size(); i++) {
+                                    PowerUp pu = powerups.get(i);
+                                    pu.update(); // Template Method moviendo el powerup
+
+                                    // Verificar si la nave lo recoge
+                                    if (pu.verificarColision(nave)) {
+                                        nave.ganarVida(); // Efecto: Vida Extra
+                                        powerups.remove(i); // Desaparece
+                                        i--;
+                                        // Opcional: Sumar puntos extra también
+                                        score += 50; 
+                                    }
+                                    // Eliminar si sale de pantalla
+                                    else if (pu.y < 0) {
+                                        powerups.remove(i);
+                                        i--;
+                                    }
+                                }
+                                // ------------------------
 				// Colisiones entre asteroides
 				for (int i = 0; i < balls1.size(); i++) {
 					Ball2 ball1 = balls1.get(i);
@@ -164,7 +195,9 @@ public class PantallaJuego extends PantallaBase {
 		for (Bullet b : balas) {
 			b.draw(batch);
 		}
-
+                for (PowerUp pu : powerups) {
+                    pu.draw(batch);
+                }
 		nave.draw(batch, this);
 
 		for (int i = 0; i < balls1.size(); i++) {
